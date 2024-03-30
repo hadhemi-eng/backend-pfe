@@ -37,7 +37,6 @@ export class User {
     password: string;
 
     async validatePassword(password: string): Promise<boolean> {
-      this.logger.error("3asba"+this.password+"nayyek"+password);
       return bcrypt.compare(password, this.password);
         //return password===this.password;
       }

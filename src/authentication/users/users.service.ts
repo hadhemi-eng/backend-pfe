@@ -7,7 +7,6 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  private readonly logger = new Logger(UsersService.name);
   constructor(
     @InjectRepository(User) private readonly adminRepository: Repository<User>,
   ) {}
@@ -31,7 +30,6 @@ export class UsersService {
     
     async findByEmail(email: string): Promise<User> {
       try {
-        this.logger.error("3asba"+(await this.adminRepository.findOne({ where: { email } })).Gouvernorat);
         return await this.adminRepository.findOne({ where: { email } });
       } catch (error) {
         console.error('Error executing findByEmail query:', error);

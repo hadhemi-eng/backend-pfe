@@ -33,10 +33,28 @@ export class AdherentService {
     return this.adherentRepository.find();
   }
 
-  findOne(id: number) {
-    return this.adherentRepository.findOneBy({id:id});
+  async findOne(id: number) {
+    const adherent = await this.adherentRepository.findOneBy({id:id});
+    if (!adherent) {
+      throw new NotFoundException('Adherent not found');
+    }
+    return adherent;
   }
-
+  async filterAdherentsByFirstName(searchTerm: string): Promise<any[]> {
+    return (await this.adherentRepository.find()).filter(adherent =>
+      adherent.prenom.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }
+  async filterAdherentsByName(searchTerm: string): Promise<any[]> {
+    return (await this.adherentRepository.find()).filter(adherent =>
+      adherent.nom.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }
+  async filterAdherentsByPhone(searchTerm: number): Promise<any[]> {
+    return (await this.adherentRepository.find()).filter(adherent =>
+      adherent.tel.toString().includes(searchTerm.toString())
+    );
+  }
   async update(id: number, updateAdherentDto: UpdateAdherentDto) {
     const adherent = await this.adherentRepository.findOneBy({id:id});
     if (!adherent) {

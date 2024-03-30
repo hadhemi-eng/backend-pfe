@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, ValidationPipe } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AdherentModule } from './adherent/adherent.module';
@@ -9,6 +9,7 @@ import { UsersModule } from './authentication/users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { Adress } from './adherent/entities/adress.entity';
 import { User } from './authentication/entities/user';
+import { APP_PIPE } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -28,6 +29,9 @@ import { User } from './authentication/entities/user';
   AdherentModule,
   AuthenticationModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, {
+    provide: APP_PIPE,
+    useClass: ValidationPipe,
+  }],
 })
 export class AppModule {}
