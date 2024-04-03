@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Logger } from '@nestjs/common';
 import { AdherentService } from './adherent.service';
 import { CreateAdherentDto } from './dto/create-adherent.dto';
 import { UpdateAdherentDto } from './dto/update-adherent.dto';
@@ -8,6 +8,7 @@ import { validate } from 'class-validator';
 
 @Controller('adherent')
 export class AdherentController {
+  private readonly logger = new Logger(AdherentController.name);
   constructor(private readonly adherentService: AdherentService) {}
   @Post()
   create(@Body() createAdherentDto: CreateAdherentDto) {
@@ -22,20 +23,21 @@ export class AdherentController {
     return this.adherentService.create(createAdherentDto);
   }
   @Get()
-  findAll() {
+  filterAdherents(
+    @Query('nom') nom: string,
+    @Query('prenom') prenom: string,
+    @Query('tel') tel: string
+  ) {
+    if (nom || prenom || tel) {
+    let filterCriteria: any = {};
+    if (nom) filterCriteria.nom = nom;
+    if (prenom) filterCriteria.prenom = prenom;
+    if (tel) filterCriteria.tel = tel;
+    this.logger.error(filterCriteria)
+    return this.adherentService.filterAdherentsByCriteria(filterCriteria);
+  } else {
     return this.adherentService.findAll();
   }
-  @Get('/filterByName/:searchItem')
-  filterByName(@Param('searchItem') searchItem: string) {
-    return this.adherentService.filterAdherentsByName(searchItem);
-  }
-  @Get('/filterByFirstName/:searchItem')
-  filterByFirstName(@Param('searchItem') searchItem: string) {
-    return this.adherentService.filterAdherentsByFirstName(searchItem);
-  } 
-   @Get('/filterByPhone/:searchItem')
-  filterBySearchItem(@Param('searchItem') searchItem: number) {
-    return this.adherentService.filterAdherentsByPhone(searchItem);
   }
   @Get(':id')
   findOne(@Param('id') id: string) {

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateAdherentDto } from './dto/create-adherent.dto';
+import { AdherentDTO, CreateAdherentDto } from './dto/create-adherent.dto';
 import { UpdateAdherentDto } from './dto/update-adherent.dto';
 import { Adherent } from './entities/adherent.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +8,7 @@ import { Adress } from './entities/adress.entity';
 
 @Injectable()
 export class AdherentService {
+  adherents: any;
   constructor(
     @InjectRepository(Adherent) private readonly adherentRepository: Repository<Adherent>,
     @InjectRepository(Adress) private readonly adressRepository: Repository<Adress>,
@@ -18,7 +19,7 @@ export class AdherentService {
     adherent.nom = createAdherentDto.nom;
     const address: Adress = new Adress();
   address.ville = createAdherentDto.ville;
-  address.region = createAdherentDto.Gouvernorat;
+  address.adresse = createAdherentDto.Gouvernorat;
 
   // Assign the address to the adherent
   const savedAddress = await this.adressRepository.save(address);
@@ -29,8 +30,8 @@ export class AdherentService {
     return this.adherentRepository.save(adherent);
   }
 
-  findAll() {
-    return this.adherentRepository.find();
+  async findAll() {
+    return (await this.adherentRepository.find({ relations: ['adress'] })).map(adherent => new AdherentDTO(adherent));;
   }
 
   async findOne(id: number) {
@@ -40,8 +41,8 @@ export class AdherentService {
     }
     return adherent;
   }
-  async filterAdherentsByFirstName(searchTerm: string): Promise<any[]> {
-    return (await this.adherentRepository.find()).filter(adherent =>
+ /* async filterAdherentsByFirstName(searchTerm: string): Promise<any[]> {
+    return (await this.adherentRepository.find({ relations: ['adress'] })).filter(adherent =>
       adherent.prenom.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }
@@ -55,6 +56,7 @@ export class AdherentService {
       adherent.tel.toString().includes(searchTerm.toString())
     );
   }
+  */
   async update(id: number, updateAdherentDto: UpdateAdherentDto) {
     const adherent = await this.adherentRepository.findOneBy({id:id});
     if (!adherent) {
@@ -79,7 +81,18 @@ export class AdherentService {
     // Save the updated adherent entity back to the database
     return this.adherentRepository.save(adherent);
   }
-  
+  async filterAdherentsByCriteria(criteria: any): Promise<AdherentDTO[]> {
+    const adherents = await this.adherentRepository.find({ relations: ['adress'] });
+    return adherents.filter(adherent => {
+      // Check if all criteria match the adherent
+      for (const key in criteria) {
+        if (adherent[key] !== criteria[key]) {
+          return false; // If any criterion does not match, return false
+        }
+      }
+      return true; // If all criteria match, return true
+    }).map(adherent => new AdherentDTO(adherent));
+  }
 
   remove(id: number) {
     return this.adherentRepository

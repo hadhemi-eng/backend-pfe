@@ -8,5 +8,5 @@ export class Adress {
     public ville!: string;
 
     @Column()
-    public region!: string;
+    public adresse!: string;
 }
