@@ -31,7 +31,7 @@ export class AdherentService {
   }
 
   async findAll() {
-    return (await this.adherentRepository.find({ relations: ['adress'] })).map(adherent => new AdherentDTO(adherent));;
+    return (await this.adherentRepository.find({ relations: ['adress'] ,order: { dateInscription: 'DESC'}})).map(adherent => new AdherentDTO(adherent));
   }
 
   async findOne(id: number) {
@@ -41,56 +41,54 @@ export class AdherentService {
     }
     return adherent;
   }
- /* async filterAdherentsByFirstName(searchTerm: string): Promise<any[]> {
-    return (await this.adherentRepository.find({ relations: ['adress'] })).filter(adherent =>
-      adherent.prenom.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }
-  async filterAdherentsByName(searchTerm: string): Promise<any[]> {
-    return (await this.adherentRepository.find()).filter(adherent =>
-      adherent.nom.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }
-  async filterAdherentsByPhone(searchTerm: number): Promise<any[]> {
-    return (await this.adherentRepository.find()).filter(adherent =>
-      adherent.tel.toString().includes(searchTerm.toString())
-    );
-  }
-  */
+ 
   async update(id: number, updateAdherentDto: UpdateAdherentDto) {
     const adherent = await this.adherentRepository.findOneBy({id:id});
     if (!adherent) {
       throw new NotFoundException('Adherent not found');
     }
-
-    // Apply updates from the DTO to the adherent entity
-    if (updateAdherentDto.prenom) {
+  
+    // Update adherent properties if they are not null or undefined in the DTO
+    if (updateAdherentDto.prenom !== null && updateAdherentDto.prenom !== undefined) {
       adherent.prenom = updateAdherentDto.prenom;
     }
-    if (updateAdherentDto.nom) {
+    if (updateAdherentDto.nom !== null && updateAdherentDto.nom !== undefined) {
       adherent.nom = updateAdherentDto.nom;
     }
-    if (updateAdherentDto.tel) {
+    if (updateAdherentDto.tel !== null && updateAdherentDto.tel !== undefined) {
       adherent.tel = updateAdherentDto.tel;
     }
-    if (updateAdherentDto.email) {
+    if (updateAdherentDto.email !== null && updateAdherentDto.email !== undefined) {
       adherent.mail = updateAdherentDto.email;
     }
-    // Apply other updates as needed
-
-    // Save the updated adherent entity back to the database
+    // Repeat the pattern for other properties
+    if (updateAdherentDto.ville !== null && updateAdherentDto.ville !== undefined) {
+      adherent.adress.ville = updateAdherentDto.ville;
+    }
+    if (updateAdherentDto.Gouvernorat !== null && updateAdherentDto.Gouvernorat !== undefined) {
+      adherent.adress.adresse = updateAdherentDto.Gouvernorat;
+    }
+    if (updateAdherentDto.dateInscription !== null && updateAdherentDto.dateInscription !== undefined) {
+      adherent.dateInscription = updateAdherentDto.dateInscription;
+    }
+    if (updateAdherentDto.state !== null && updateAdherentDto.state !== undefined) {
+      adherent.state = updateAdherentDto.state;
+    }
+    if (updateAdherentDto.etat !== null && updateAdherentDto.etat !== undefined) {
+      adherent.etat = updateAdherentDto.etat;
+    }  
+    // Save and return the updated adherent
     return this.adherentRepository.save(adherent);
   }
   async filterAdherentsByCriteria(criteria: any): Promise<AdherentDTO[]> {
-    const adherents = await this.adherentRepository.find({ relations: ['adress'] });
+    const adherents = await this.adherentRepository.find({ relations: ['adress'],order: { dateInscription: 'DESC'} });
     return adherents.filter(adherent => {
-      // Check if all criteria match the adherent
       for (const key in criteria) {
         if (adherent[key] !== criteria[key]) {
-          return false; // If any criterion does not match, return false
+          return false; 
         }
       }
-      return true; // If all criteria match, return true
+      return true; 
     }).map(adherent => new AdherentDTO(adherent));
   }
 

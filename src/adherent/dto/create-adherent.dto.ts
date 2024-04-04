@@ -1,5 +1,6 @@
 import {
   IsAlphanumeric,
+  IsDate,
   IsEmail,
   IsEnum,
   IsInt,
@@ -14,8 +15,12 @@ import { Adherent } from '../entities/adherent.entity';
 const passwordRegEx = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
 enum AdherentState {
   ACTIVE = 'active',
-  WAITING = 'waiting',
-  REJECTED = 'rejected',
+  WAITING = 'en attente',
+  REJECTED = 'rejeté',
+}
+enum AdherentEtat {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
 }
 export class CreateAdherentDto {
   @IsString()
@@ -40,6 +45,16 @@ export class CreateAdherentDto {
 
   @IsString()
   Gouvernorat: string;
+
+  @IsDate()
+  dateInscription: Date;
+
+@IsEnum(AdherentState)
+  state: AdherentState;
+
+  @IsEnum(AdherentEtat)
+  etat: AdherentEtat;
+
 }
 export class AdherentDTO {
   id: number;
@@ -49,6 +64,7 @@ export class AdherentDTO {
   mail: string;
   dateInscription: Date;
   state: AdherentState;
+  etat:AdherentEtat;
   adress: { ville: string, adresse: string };
 
   constructor(adherent: Adherent) {

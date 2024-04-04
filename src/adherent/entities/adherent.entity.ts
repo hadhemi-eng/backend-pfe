@@ -2,8 +2,12 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 't
 import { Adress } from './adress.entity';
 enum AdherentState {
     ACTIVE = 'active',
-    WAITING = 'waiting',
-    REJECTED = 'rejected',
+    WAITING = 'en attente',
+    REJECTED = 'rejeté',
+  }
+  enum AdherentEtat {
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',
   }
 @Entity()
 export class Adherent {
@@ -28,6 +32,10 @@ export class Adherent {
 
     @Column({ type: 'enum', enum: AdherentState, default: AdherentState.WAITING })
     state: AdherentState;
+
+    @Column({ type: 'enum', enum: AdherentEtat, default: AdherentEtat.ACTIVE })
+    etat: AdherentEtat;
+
     @ManyToOne(() => Adress)
     @JoinColumn({ name: "adress_id" })
     public adress!: Adress;
