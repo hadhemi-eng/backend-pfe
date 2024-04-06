@@ -30,10 +30,12 @@ export class Adherent {
     @Column({ type: 'date' ,default: () => 'CURRENT_TIMESTAMP'})
     dateInscription: Date;
 
-    @Column({ type: 'enum', enum: AdherentState, default: AdherentState.WAITING })
+   // @Column({ type: 'enum', enum: AdherentState, default: AdherentState.WAITING })
+   @Column({ type: 'varchar', length: 30 ,default: AdherentEtat.ACTIVE })
     state: AdherentState;
 
-    @Column({ type: 'enum', enum: AdherentEtat, default: AdherentEtat.ACTIVE })
+    //@Column({ type: 'enum', enum: AdherentEtat, default: AdherentEtat.ACTIVE })
+    @Column({ type: 'varchar', length: 30 ,default: AdherentEtat.ACTIVE })
     etat: AdherentEtat;
 
     @ManyToOne(() => Adress)
