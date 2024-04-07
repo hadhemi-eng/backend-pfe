@@ -15,7 +15,7 @@ export class User {
     @Column({ type: 'varchar', length: 30 })
     nomRepresentantLegal: string;
 
-    @Column({ type: 'int'})
+    @Column({ type: 'varchar', length: 20 }) // Change type to varchar for telephone number
     telRepresentantLegal: string;
 
     @Column({ type: 'varchar', length: 15 })
@@ -38,7 +38,5 @@ export class User {
 
     async validatePassword(password: string): Promise<boolean> {
       return bcrypt.compare(password, this.password);
-        //return password===this.password;
-      }
-
+    }
 }

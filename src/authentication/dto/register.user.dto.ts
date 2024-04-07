@@ -1,39 +1,29 @@
-import {
-    IsAlphanumeric,
-    IsEmail,
-    IsEnum,
-    IsInt,
-    IsNotEmpty,
-    IsString,
-    Matches,
-    MinLength,
-  } from 'class-validator';
-const passwordRegEx = /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{8,20}$/;
+import { IsAlphanumeric, IsEmail, IsNotEmpty, IsInt, IsString, MinLength } from 'class-validator';
+
+const passwordRegEx = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
+
 export class RegisterUserDto {
     @IsString()
-    @MinLength(2, { message: 'prenomRepresentantLegal must have atleast 2 characters.' })
+    @MinLength(2, { message: 'prenomRepresentantLegal must have at least 2 characters.' })
     @IsNotEmpty()
     prenomRepresentantLegal: string;
-  
+
     @IsString()
-    @MinLength(2, { message: 'nomRepresentantLegal must have atleast 2 characters.' })
+    @MinLength(2, { message: 'nomRepresentantLegal must have at least 2 characters.' })
     @IsNotEmpty()
     nomRepresentantLegal: string;
-  
+
     @IsInt()
     telRepresentantLegal: number;
 
     @IsNotEmpty()
-    @MinLength(3, { message: 'Username must have atleast 3 characters.' })
-    @IsAlphanumeric(null, {
-      message: 'Username does not allow other than alpha numeric chars.',
-    })
+    @MinLength(3, { message: 'Username must have at least 3 characters.' })
     username: string;
-  
+
     @IsNotEmpty()
-    @IsEmail(null, { message: 'Please provide valid Email.' })
+    @IsEmail({}, { message: 'Please provide a valid Email.' })
     email: string;
-  
+
     @IsString()
     ville: string;
 
@@ -42,14 +32,8 @@ export class RegisterUserDto {
 
     @IsInt()
     matriculeFiscale: number;
-  
+
     @IsNotEmpty()
-    @Matches(passwordRegEx, {
-      message: `Password must contain Minimum 8 and maximum 20 characters, 
-      at least one uppercase letter, 
-      one lowercase letter, 
-      one number and 
-      one special character`,
-    })
+    @MinLength(8, { message: 'Password must be at least 8 characters long.' })
     password: string;
 }

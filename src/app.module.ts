@@ -6,10 +6,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Adherent } from './adherent/entities/adherent.entity';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { UsersModule } from './authentication/users/users.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Adress } from './adherent/entities/adress.entity';
 import { User } from './authentication/entities/user';
-import { APP_PIPE } from '@nestjs/core';
+import { APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { JwtModule } from '@nestjs/jwt';
+import { AuthenticationController } from './authentication/authentication.controller';
+import { JwtGuard } from './authentication/jwt-auth.guard';
+import { LocalStrategy } from './authentication/local.strategy';
 
 @Module({
   imports: [
@@ -26,12 +30,22 @@ import { APP_PIPE } from '@nestjs/core';
     logging: true,
   }),
   UsersModule,
+  JwtModule.register({
+    secretOrPrivateKey: 'secretKey',
+    signOptions: {
+      expiresIn: '10000',
+    },
+  }),
   AdherentModule,
   AuthenticationModule],
-  controllers: [AppController],
+  controllers: [AppController,AuthenticationController],
   providers: [AppService, {
     provide: APP_PIPE,
     useClass: ValidationPipe,
-  }],
+  },{
+    provide: APP_GUARD,
+    useClass: JwtGuard,
+  },
+  LocalStrategy,],
 })
 export class AppModule {}

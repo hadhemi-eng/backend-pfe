@@ -14,7 +14,6 @@ export class AuthenticationService {
   ) {}
   async signIn(signInDto: SignInDto) {
     const { email, password } = signInDto;
-
     const user = await this.usersService.findByEmail(email);
     if (!user) {
       throw new UnauthorizedException('Invalid username or password');
@@ -23,7 +22,7 @@ export class AuthenticationService {
     if (!passwordIsValid) {
       throw new UnauthorizedException('Invalid username or password');
     }
-    const payload = { sub: user.id, username: user.username };
+    const payload = { sub: user.id, email: user.email };
     const accessToken = await this.jwtService.signAsync(payload);
     const responseDto: ResponseDto = {
       data: {

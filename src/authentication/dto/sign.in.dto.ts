@@ -8,22 +8,22 @@ import {
     Matches,
     MinLength,
   } from 'class-validator';
-  const passwordRegEx = /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{8,20}$/;
+  const passwordRegEx = /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{4,20}$/;
 
 export class SignInDto  {
 
 
-    @IsNotEmpty()
-    @IsEmail(null, { message: 'Please provide valid Email.' })
-    email: string;
+  @IsNotEmpty({ message: 'Email is required.' }) // Validation error message for empty email
+    @IsEmail({ allow_display_name: true, require_tld: true }, { message: 'Please provide valid Email.' })
+    email: string| null;
 
-    @IsNotEmpty()
-    @Matches(passwordRegEx, {
-      message: `Password must contain Minimum 8 and maximum 20 characters, 
+    @IsNotEmpty({ message: 'password is required.' }) // Validation error message for empty password
+    /* @Matches(passwordRegEx, {
+      message: `Password must contain Minimum 4 and maximum 20 characters, 
       at least one uppercase letter, 
       one lowercase letter, 
       one number and 
       one special character`,
-    })
-    password: string;
+    }) */
+    password: string|null;
 }

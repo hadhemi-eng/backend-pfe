@@ -1,27 +1,17 @@
-import {
-  IsAlphanumeric,
-  IsDate,
-  IsEmail,
-  IsEnum,
-  IsInt,
-  IsNotEmpty,
-  IsString,
-  Matches,
-  MinLength,
-} from 'class-validator';
+import { IsEmail, IsEnum, IsInt, IsNotEmpty, IsString, MinLength, IsDate, IsDateString } from 'class-validator';
 import { Adherent } from '../entities/adherent.entity';
 
-// Define the regular expression for password validation
-const passwordRegEx = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
 enum AdherentState {
   ACTIVE = 'active',
   WAITING = 'en attente',
   REJECTED = 'rejeté',
 }
+
 enum AdherentEtat {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
 }
+
 export class CreateAdherentDto {
   @IsString()
   @MinLength(2, { message: 'prenom must have at least 2 characters.' })
@@ -37,7 +27,7 @@ export class CreateAdherentDto {
   tel: number;
 
   @IsNotEmpty()
-  @IsEmail({}, { message: 'Please provide a valid Email.' }) // Pass an empty object instead of null
+  @IsEmail({}, { message: 'Please provide a valid Email.' })
   email: string;
 
   @IsString()
@@ -46,38 +36,39 @@ export class CreateAdherentDto {
   @IsString()
   Gouvernorat: string;
 
-  @IsDate()
+  @IsDateString()
   dateInscription: Date;
 
-@IsEnum(AdherentState)
+  @IsEnum(AdherentState)
   state: AdherentState;
 
   @IsEnum(AdherentEtat)
   etat: AdherentEtat;
-
 }
+
 export class AdherentDTO {
   id: number;
   prenom: string;
   nom: string;
   tel: number;
-  mail: string;
+  email: string; // Renamed from mail to email
   dateInscription: Date;
   state: AdherentState;
-  etat:AdherentEtat;
-  adress: { ville: string, adresse: string };
+  etat: AdherentEtat;
+  adress: { ville: string; adresse: string };
 
   constructor(adherent: Adherent) {
     this.id = adherent.id;
     this.prenom = adherent.prenom;
     this.nom = adherent.nom;
     this.tel = adherent.tel;
-    this.mail = adherent.mail;
+    this.email = adherent.mail; // Renamed from adherent.mail to adherent.email
     this.dateInscription = adherent.dateInscription;
     this.state = adherent.state;
+    this.etat = adherent.etat;
     this.adress = {
       ville: adherent.adress.ville,
-      adresse: adherent.adress.adresse
+      adresse: adherent.adress.adresse,
     };
   }
 }

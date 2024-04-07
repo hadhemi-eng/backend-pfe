@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import {RegisterUserDto } from './dto/register.user.dto';
 import { SignInDto } from './dto/sign.in.dto';
@@ -8,6 +8,8 @@ import { validate } from 'class-validator';
 
 @Controller('authentication')
 export class AuthenticationController {
+  private readonly logger = new Logger(AuthenticationController.name);
+
   constructor(
     private readonly authService: AuthenticationService,
     private readonly usersService: UsersService,
@@ -19,9 +21,12 @@ export class AuthenticationController {
 @Public()
 @Post('sign-in')
   async signIn(@Body() signInDto: SignInDto) {
+    this.logger.error("ha33")
+
     // Validate the signInDto object
     const validationErrors = await validate(signInDto);
-    
+    this.logger.error("ba33");
+
     // Check if validation has failed
     if (validationErrors.length > 0) {
       // If validation fails, create an array of error messages

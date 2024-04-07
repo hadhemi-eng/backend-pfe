@@ -3,7 +3,7 @@ import { AdherentService } from './adherent.service';
 import { CreateAdherentDto } from './dto/create-adherent.dto';
 import { UpdateAdherentDto } from './dto/update-adherent.dto';
 import { Public } from 'src/authentication/public.decorator';
-import { JwtAuthGuard } from 'src/authentication/jwt-auth.guard';
+import { JwtGuard } from 'src/authentication/jwt-auth.guard';
 import { validate } from 'class-validator';
 
 @Controller('adherent')
@@ -23,6 +23,7 @@ export class AdherentController {
     return this.adherentService.create(createAdherentDto);
   }
   @Get()
+  @UseGuards(JwtGuard)
   filterAdherents(
     @Query('nom') nom: string,
     @Query('prenom') prenom: string,
