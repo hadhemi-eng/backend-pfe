@@ -1,5 +1,6 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Adress } from './adress.entity';
+import { Cotisation } from 'src/cotisation/entities/cotisation.entity';
 enum AdherentState {
     ACTIVE = 'active',
     WAITING = 'en attente',
@@ -41,5 +42,8 @@ export class Adherent {
     @ManyToOne(() => Adress)
     @JoinColumn({ name: "adress_id" })
     public adress!: Adress;
+
+    @OneToMany(() => Cotisation, Cotisation => Cotisation.adherent)
+    cotisationList: Cotisation[];
 
 }

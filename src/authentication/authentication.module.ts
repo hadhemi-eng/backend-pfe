@@ -12,17 +12,17 @@ import { LocalStrategy } from './local.strategy';
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User,Adress]),
-    UsersModule,
+  imports: [
+    TypeOrmModule.forFeature([User, Adress]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'secret',
       signOptions: { expiresIn: '1h' },
     }),
-    UsersModule,
-  ],
+    UsersModule],
   controllers: [AuthenticationController],
-  providers: [AuthenticationService, UsersService,LocalStrategy],
+  providers: [AuthenticationService, UsersService, LocalStrategy],
   exports: [AuthenticationService],
 })
 export class AuthenticationModule {}
+
