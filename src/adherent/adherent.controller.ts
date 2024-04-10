@@ -26,21 +26,17 @@ export class AdherentController {
   }
   @Public()
   @Get()
-  filterAdherents(
+  async filterAdherents(
     @Query('nom') nom: string,
     @Query('prenom') prenom: string,
-    @Query('tel') tel: string
+    @Query('tel') tel: string,
   ) {
-    if (nom || prenom || tel) {
-    let filterCriteria: any = {};
-    if (nom) filterCriteria.nom = nom;
-    if (prenom) filterCriteria.prenom = prenom;
-    if (tel) filterCriteria.tel = tel;
-    this.logger.error(filterCriteria)
-    return this.adherentService.filterAdherentsByCriteria(filterCriteria);
-  } else {
-    return this.adherentService.findAll();
-  }
+    const results = await this.adherentService.executeCustomQuery(nom, prenom,tel);
+    
+    // Enregistrer les résultats dans les journaux
+    this.logger.log(`Filtered Adherents: ${JSON.stringify(results)}`);
+
+    return results; 
   }
   @Get(':id')
   findOne(@Param('id') id: string) {

@@ -1,17 +1,20 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { AdherentDTO, CreateAdherentDto } from './dto/create-adherent.dto';
 import { UpdateAdherentDto } from './dto/update-adherent.dto';
 import { Adherent } from './entities/adherent.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectConnection, InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { Connection, DataSource, Repository, getConnection } from 'typeorm';
 import { Adress } from './entities/adress.entity';
 
 @Injectable()
 export class AdherentService {
+  private readonly logger = new Logger(AdherentService.name);
+
   adherents: any;
   constructor(
     @InjectRepository(Adherent) private readonly adherentRepository: Repository<Adherent>,
     @InjectRepository(Adress) private readonly adressRepository: Repository<Adress>,
+    @InjectDataSource() private dataSource: DataSource,
   ) {}
   async create(createAdherentDto: CreateAdherentDto) {
     const adherent: Adherent = new Adherent();
@@ -80,16 +83,27 @@ export class AdherentService {
     // Save and return the updated adherent
     return this.adherentRepository.save(adherent);
   }
-  async filterAdherentsByCriteria(criteria: any): Promise<AdherentDTO[]> {
-    const adherents = await this.adherentRepository.find({ relations: ['adress'],order: { dateInscription: 'DESC'} });
-    return adherents.filter(adherent => {
-      for (const key in criteria) {
-        if (adherent[key] !== criteria[key]) {
-          return false; 
+  async executeCustomQuery(nom: string,prenom: string,tel: string): Promise<Adherent[]> {
+        // Utiliser TypeORM pour construire la requête de manière sécurisée
+        const queryBuilder = this.adherentRepository.createQueryBuilder('adherent');
+    
+        if (nom !== undefined) {
+            queryBuilder.andWhere('adherent.nom = :nom', { nom });
         }
-      }
-      return true; 
-    }).map(adherent => new AdherentDTO(adherent));
+    
+        if (prenom !== undefined) {
+            queryBuilder.andWhere('adherent.prenom = :prenom', { prenom });
+        }
+    
+        if (tel !== undefined) {
+            queryBuilder.andWhere('adherent.tel = :tel', { tel });
+        }
+    
+        // Exécuter la requête et renvoyer les résultats
+        const result= queryBuilder.getMany();
+        this.logger.log(`Filtered Adherents: ${result}`);
+        return result;
+    
   }
 
   remove(id: number) {

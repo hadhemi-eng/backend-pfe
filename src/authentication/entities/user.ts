@@ -15,8 +15,8 @@ export class User {
     @Column({ type: 'varchar', length: 30 })
     nomRepresentantLegal: string;
 
-    @Column({ type: 'varchar', length: 20 }) // Change type to varchar for telephone number
-    telRepresentantLegal: string;
+    @Column({ type: 'varchar', length: 20, nullable: true }) // Add nullable: true
+    telRepresentantLegal: string | null;
 
     @Column({ type: 'varchar', length: 15 })
     ville: string;
